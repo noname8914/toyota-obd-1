@@ -2,8 +2,8 @@ void drawExtraData(void) {
   u8g.setFont(u8g_font_unifontr);
   u8g.firstPage();
   do {
-    u8g.drawStr( 0, 17, "O2s" );
-    u8g.setPrintPos(25, 17) ;
+    u8g.drawStr( 0, 16, "O2s" );
+    u8g.setPrintPos(25, 16) ;
     u8g.print(int(getOBDdata(OBD_OXSENS)));
 
     //u8g.drawStr( 0, 32, "OX2");
@@ -18,8 +18,8 @@ void drawExtraData(void) {
     u8g.setPrintPos(25, 62) ;
     u8g.print( int(getOBDdata(12)));
 
-    u8g.drawStr( 65, 17, "DET" );
-    u8g.setPrintPos(92, 17) ;
+    u8g.drawStr( 65, 16, "DET" );
+    u8g.setPrintPos(92, 16) ;
     u8g.print( int(getOBDdata(13)));
 
     u8g.drawStr( 65, 32, "FE1");
@@ -43,8 +43,8 @@ void drawExtraFlags(void) {
   u8g.setFont(u8g_font_unifontr);
   u8g.firstPage();
   do {
-    u8g.drawStr( 0, 17, "IDL" );
-    u8g.setPrintPos(25, 17) ;
+    u8g.drawStr( 0, 16, "IDL" );
+    u8g.setPrintPos(25, 16) ;
     u8g.print(int(getOBDdata(17)));
 
     u8g.drawStr( 0, 32, "CND");
@@ -59,8 +59,8 @@ void drawExtraFlags(void) {
     u8g.setPrintPos(25, 62) ;
     u8g.print( int(getOBDdata(20)));
 
-    u8g.drawStr( 65, 17, "EN2" );
-    u8g.setPrintPos(92, 17) ;
+    u8g.drawStr( 65, 16, "EN2" );
+    u8g.setPrintPos(92, 16) ;
     u8g.print( int(getOBDdata(21)));
 
     u8g.drawVLine(63, 0, 64);
@@ -181,8 +181,8 @@ void drawAllData(void) {
   u8g.setFont(u8g_font_profont15r);
   u8g.firstPage();
   do {
-    u8g.drawStr( 0, 17, "INJ" );
-    u8g.setPrintPos(25, 17) ;
+    u8g.drawStr( 0, 16, "INJ" );
+    u8g.setPrintPos(25, 16) ;
     u8g.print(getOBDdata(OBD_INJ));
 
     u8g.drawStr( 0, 32, "IGN");
@@ -197,8 +197,8 @@ void drawAllData(void) {
     u8g.setPrintPos(25, 62) ;
     u8g.print( int(getOBDdata(OBD_RPM)));
 
-    u8g.drawStr( 65, 17, "MAP" );
-    u8g.setPrintPos(92, 17) ;
+    u8g.drawStr( 65, 16, "MAP" );
+    u8g.setPrintPos(92, 16) ;
     u8g.print( int(getOBDdata(OBD_MAP)));
 
     u8g.drawStr( 65, 32, "ECT");
