@@ -1,4 +1,4 @@
-#define Ncyl 6.0      //6 форсунок
+#define Ncyl 4.0      //4 форсунок
 #define Ninjection 1  //впрыск 1 раз за цикл
 
 
