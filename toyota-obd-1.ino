@@ -9,11 +9,14 @@
 #include <EEPROM.h>
 #include <MD_KeySwitch.h>
 #include "DEFINES.h"
-#define Ls 0.003965888 //производительсность форсунки литров в секунду // базовый 0.004 или 240cc
+#define Ls 0,003470152
 
-//#define LOGGING_FULL    //Запись на SD всех данных
+    //#define SDCARD //закомментировать если не нужен функционал логирования на SD карту.
+    //обязательно закомментировать если не подключен SD модуль. Иначе программа будет не стартовать.
+    //#define INJECTOR //чтение сигнала с форсунок. Как показала практика расход по ОБД считается достаточно точно. Смысла использовать сигнал с форсунок нету.
+    //#define LOGGING_FULL    //Запись на SD всех данных
 #define DEBUG_OUTPUT true // for debug option - swith output to Serial
-//DEFINE пинов под входы-выходы
+    //DEFINE пинов под входы-выходы
 #define LED_PIN          13
 #define ENGINE_DATA_PIN 2 //VF1 PIN
 #define TOGGLE_BTN_PIN 4 //screen change PIN
@@ -21,10 +24,13 @@
 
 
 
-//DEFINE констант расходомера
+    //DEFINE констант расходомера
 
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE);
-
+    //#if defined(SDCARD)
+      //SdFat sd;
+      //SdFile file;
+    //#endif
 
 MD_KeySwitch S(TOGGLE_BTN_PIN, HIGH);
 byte CurrentDisplayIDX = 1;
@@ -47,6 +53,10 @@ volatile uint16_t ToyotaFailBit = 0;
 boolean LoggingOn = false;
 
 void setup() {
+    //#if defined(SDCARD)
+    //  char fileName[13] = FILE_BASE_NAME "00.csv";
+    //  const uint8_t BASE_NAME_SIZE = sizeof(FILE_BASE_NAME) - 1;
+    //#endif
   noInterrupts();
   Serial.begin(115200);
   ReadEEPROM();
@@ -65,7 +75,15 @@ void setup() {
     Serial.println(total_obd_avg_fuel_consumption, 3);
     //   Serial.println(total_obd_inj_dur_ee, 3);
   }
-
+    //#if defined(SDCARD)
+      //  SDinit();
+      //  writeHeader();
+    //#endif
+    //#if defined(INJECTOR)
+      //  InjectorInit();
+      //  pinMode(INJECTOR_PIN, INPUT); // Injector PIN
+      //  attachInterrupt(digitalPinToInterrupt(INJECTOR_PIN), InjectorTime, CHANGE); //setup Interrupt for data line
+    //#endif
   pinMode(ENGINE_DATA_PIN, INPUT); // VF1 PIN
   pinMode(LED_PIN, OUTPUT);
   attachInterrupt(digitalPinToInterrupt(ENGINE_DATA_PIN), ChangeState, CHANGE); //setup Interrupt for data line
@@ -113,8 +131,12 @@ void loop(void) {
       LPH = getOBDdata(OBD_INJ) * getOBDdata(OBD_RPM) * Ls * 0.18;
       t = millis();
     }
-    
-	drawScreenSelector(); // draw screen
+    //#if defined(INJECTOR)
+      //по сигналу с форсунок
+      // total_avg_consumption = 100 * total_consumption_inj / total_run;
+      // avg_consumption_inj = 100 * current_consumption_inj / current_run; //average l/100km for unleaded fuel     //вроде норм
+    //#endif   
+  drawScreenSelector(); // draw screen
     ToyotaNumBytes = 0;     // reset the counter.
   } // end if (ToyotaNumBytes > 0)
   if (getOBDdata(OBD_SPD) == 0 && flagNulSpeed == false)  {   //Запись данных в еепром когда остановка авто
@@ -122,8 +144,16 @@ void loop(void) {
     flagNulSpeed = true;                                  //запрет повторной записи
   }
   if (getOBDdata(OBD_SPD) != 0) flagNulSpeed = false;     //начали двигаться - разрешаем запись
-  //  if (millis() % 5000 < 50) autoscreenchange();      // ротация экранов
+
+    //#if defined(SDCARD)
+      //if (millis() % 500 < 50 && LoggingOn == true) {         //каждую 0.5с запись в лог данных по двоному нажатию на кнопку
+      //logData();
+      //}
+    //#endif
+
+//  if (millis() % 5000 < 50) autoscreenchange();      // ротация экранов
 }
+
 
 void drawScreenSelector(void) {
   if (CurrentDisplayIDX == 1) DrawCurrentFuelConsuption();
@@ -134,11 +164,13 @@ void drawScreenSelector(void) {
   else if (CurrentDisplayIDX == 6) drawExtraFlags();
 } // end drawScreenSelector()
 
+
 void autoscreenchange() {
   CurrentDisplayIDX++;
   if (CurrentDisplayIDX > 3) CurrentDisplayIDX = 1;
   drawScreenSelector();
 }
+
 
 void ent() {//ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ
   CurrentDisplayIDX++;
